@@ -1,0 +1,33 @@
+{
+    "name": "messagebox/messagebox-client-php",
+    "description": "MessageBox client for PHP",
+    "keywords": ["messagebox", "email", "messages"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Hongliang Wang",
+            "email": "h.wang@onatal.nl",
+            "role": "Developer"
+        },
+        {
+            "name": "Joost Faassen",
+            "email": "j.faassen@onatal.nl",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "e-mail": "support@linkorb.com",
+        "issues": "https://github.com/messagebox-project/messagebox-client-php/issues"
+    },
+    "require": {
+        "symfony/console": "~2.4",
+        "guzzlehttp/guzzle": "~4.2"
+    },
+    "bin": ["bin/messagebox-client"],
+    "autoload": {
+        "psr-4": {
+            "MessageBox\\Client\\": "src/"
+        }
+    }
+}
