@@ -44,6 +44,16 @@ class Client
         }
         return $messages;
     }
+
+    public function getMessage($messageid)
+    {
+        $guzzleclient = $this->getGuzzleClient();
+        $url = $this->baseurl . '/api/v1/messages/' . $messageid;
+        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $row = $res->json();
+        $message = $this->row2message($row);
+        return $message;
+    }
     
     private function row2message($row)
     {
