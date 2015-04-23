@@ -14,26 +14,71 @@ class Client
     
     private $baseurl = "http://www.messagebox.web/";
     
+    private $guzzleclient;
+    
+    private function getGuzzleClient()
+    {
+        if ($this->guzzleclient) {
+            return $this->guzzleclient;
+        }
+        $this->guzzleclient = new GuzzleClient();
+        return $this->guzzleclient;
+    }
+    
     public function setBaseUrl($baseurl)
     {
         $this->baseurl = $baseurl;
     }
+    
+    public function getHeaders($status = 'NEW')
+    {
+        $guzzleclient = $this->getGuzzleClient();
+        $url = $this->baseurl . '/api/v1/messages';
+        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $rows = $res->json();
+        //print_r($rows);
+        $messages = array();
+        foreach ($rows as $row) {
+            //print_r($row);
+            $messages[] = $this->row2message($row);
+        }
+        return $messages;
+    }
+    
+    private function row2message($row)
+    {
+        $message = new Message();
+        $message->setId($row['id']);
+        $message->setSubject($row['subject']);
+        $message->setFromBox($row['from_box']);
+        $message->setFromDisplayname($row['from_displayname']);
+        $message->setToBox($row['to_box']);
+        $message->setToDisplayname($row['to_displayname']);
+        $message->setCreatedAt($row['created_at']);
+        $message->setDeletedAt($row['deleted_at']);
+        $message->setSeenAt($row['seen_at']);
+        $message->setContentType($row['content_type']);
+        if (isset($row['content'])) {
+            $message->setContent($row['content']);
+        }
+        return $message;
+    }
 
     public function send(Message $message)
     {
-        $guzzleclient = new GuzzleClient();
+        
+        $guzzleclient = $this->getGuzzleClient();
         $url = $this->baseurl . '/api/v1/send';
         $url .= "?to_box=" . $message->getToBox();
         $url .= "&subject=" . urlencode($message->getSubject());
         $url .= "&content=" . urlencode($message->getContent());
-        echo "URL: $url\n";
+        //echo "URL: $url\n";
         $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
         //echo $res->getStatusCode();
         //echo $res->getHeader('content-type');
         //echo $res->getBody();
         $data = $res->json();
-        if ($data['numFound']>0) {
-        }
+        $messageid = $data['id'];
         return true;
     }
 }

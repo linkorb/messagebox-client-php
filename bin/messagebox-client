@@ -22,4 +22,5 @@ require $loader;
 $application = new Application('MessageBox client', '0.0.1');
 $application->setCatchExceptions(true);
 $application->add(new \MessageBox\Client\Command\SendCommand());
+$application->add(new \MessageBox\Client\Command\ListCommand());
 $application->run();

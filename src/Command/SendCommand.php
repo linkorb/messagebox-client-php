@@ -18,43 +18,47 @@ class SendCommand extends Command
             ->setName('message:send')
             ->setDescription('Send a message through MessageBox')
             ->addOption(
-                'username',
+                'to',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Username for the messagebox server'
+                'To Box ID'
             )
             ->addOption(
-                'password',
+                'subject',
                 null,
-                InputOption::VALUE_REQUIRED,
-                'Password for the messagebox server'
-            )
-            ->addOption(
-                'baseurl',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Base URL of the messagebox server'
+                InputOption::VALUE_OPTIONAL,
+                'Subject'
             )
             ->addOption(
                 'content',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_OPTIONAL,
                 'Content'
             )
         ;
     }
+    private function getClient(InputInterface $input)
+    {
+        
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $c = new MessageBoxClient($input->getOption('username'), $input->getOption('password'));
+        $factory = new ClientFactory();
+        $client = $factory->createClient();
+        
         $message = new Message();
-        $message->setToBox('test2');
-        $message->setSubject("Subject");
-        
+        $tobox = $input->getOption('to');
+        $message->setToBox($tobox);
+        if ($input->hasOption("subject")) {
+            $message->setSubject($input->getOption("subject"));
+        }
         $message->setContent($input->getOption('content'));
-        $c->setBaseUrl($input->getOption('baseurl'));
         
-        $results = $c->send($message);
+        if (!$message) {
+            $message = "No message content";
+        }
+        $results = $client->send($message);
         print_r($results);
     }
 }
