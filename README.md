@@ -5,7 +5,10 @@ MessageBox client for PHP
 ```php
 <?php
 
-$client = new Client($username, $password);
+use MessageBox\Client\Client as MessageBoxClient;
+use MessageBox\Client\Model\Message;
+
+$client = new MessageBoxClient($username, $password);
 $message = new Message();
 $message->setToBox('0000');
 $message->setSubject('Yeeehah');
