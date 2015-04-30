@@ -82,7 +82,7 @@ class Client
         $url .= "?to_box=" . $message->getToBox();
         $url .= "&subject=" . urlencode($message->getSubject());
         $url .= "&content=" . urlencode($message->getContent());
-        //echo "URL: $url\n";
+        $url .= "&content_type=" . urlencode($message->getContentType());
         $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
         //echo $res->getStatusCode();
         //echo $res->getHeader('content-type');

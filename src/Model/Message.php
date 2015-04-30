@@ -114,7 +114,7 @@ class Message
     }
     
     
-    private $content_type;
+    private $content_type = 'text/plain';
     
     public function getContentType()
     {
@@ -138,6 +138,4 @@ class Message
     {
         $this->content = $content;
     }
-        
-    
 }

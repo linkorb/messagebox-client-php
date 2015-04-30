@@ -35,6 +35,12 @@ class SendCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Content'
             )
+            ->addOption(
+                'contenttype',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Content type'
+            )
         ;
     }
     private function getClient(InputInterface $input)
@@ -52,6 +58,9 @@ class SendCommand extends Command
         $message->setToBox($tobox);
         if ($input->hasOption("subject")) {
             $message->setSubject($input->getOption("subject"));
+        }
+        if ($input->hasOption("contenttype")) {
+            $message->setContentType($input->getOption("contenttype"));
         }
         $message->setContent($input->getOption('content'));
         
