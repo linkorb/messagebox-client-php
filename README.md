@@ -9,6 +9,7 @@ use MessageBox\Client\Client as MessageBoxClient;
 use MessageBox\Client\Model\Message;
 
 $client = new MessageBoxClient($username, $password);
+$client->setBaseUrl('http://www.messagebox.web');
 $message = new Message();
 $message->setToBox('0000');
 $message->setSubject('Yeeehah');
