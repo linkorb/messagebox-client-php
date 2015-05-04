@@ -81,9 +81,10 @@ class Client
         $url = $this->baseurl . '/api/v1/send';
         $url .= "?to_box=" . $message->getToBox();
         $url .= "&subject=" . urlencode($message->getSubject());
-        $url .= "&content=" . urlencode($message->getContent());
+        // $url .= "&content=" . urlencode($message->getContent());
         $url .= "&content_type=" . urlencode($message->getContentType());
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        // $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $res = $guzzleclient->post($url, ['auth' =>  [$this->username, $this->password], 'body' => ['content' => $message->getContent()]]);
         //echo $res->getStatusCode();
         //echo $res->getHeader('content-type');
         //echo $res->getBody();
