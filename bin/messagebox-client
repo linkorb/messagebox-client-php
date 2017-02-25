@@ -27,4 +27,5 @@ $application->add(new \MessageBox\Client\Command\GetCommand());
 $application->add(new \MessageBox\Client\Command\ContentCommand());
 $application->add(new \MessageBox\Client\Command\ArchiveCommand());
 $application->add(new \MessageBox\Client\Command\UnarchiveCommand());
+$application->add(new \MessageBox\Client\Command\SendCommand());
 $application->run();

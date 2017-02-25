@@ -112,22 +112,24 @@ class Client
         return $message;
     }
 
-    public function send(Message $message)
+    public function send($fromUsername, $to, $subject, $content, $contentType)
     {
 
         $guzzleclient = $this->getGuzzleClient();
         $url = $this->boxBaseUrl . '/send';
-        $url .= "?to_box=" . $message->getToBox();
-        $url .= "&subject=" . urlencode($message->getSubject());
-        // $url .= "&content=" . urlencode($message->getContent());
-        $url .= "&content_type=" . urlencode($message->getContentType());
-        // $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
-        $res = $guzzleclient->post($url, ['auth' =>  [$this->username, $this->password], 'body' => ['content' => $message->getContent()]]);
-        //echo $res->getStatusCode();
-        //echo $res->getHeader('content-type');
-        //echo $res->getBody();
-        $data = $res->json();
-        $messageid = $data['id'];
-        return true;
+
+        $data = [];
+        $data['from_username'] = $fromUsername;
+        $data['to'] = $to;
+        $data['subject'] = $subject;
+        $data['content'] = base64_encode($content);
+        $data['content_type'] = base64_encode($contentType);
+        $json = json_encode($data);
+        //echo $json;
+        $res = $guzzleclient->post($url, ['auth' =>  [$this->username, $this->password], 'body' => $json]);
+        $json = $res->getBody();
+        $data = json_decode($json, true);
+        $messageId = $data['message_id'];
+        return $messageId;
     }
 }
