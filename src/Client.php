@@ -123,7 +123,7 @@ class Client
         $data['to'] = $to;
         $data['subject'] = $subject;
         $data['content'] = base64_encode($content);
-        $data['content_type'] = base64_encode($contentType);
+        $data['content_type'] = $contentType;
         $json = json_encode($data);
         //echo $json;
         $res = $guzzleclient->post($url, ['auth' =>  [$this->username, $this->password], 'body' => $json]);
