@@ -10,13 +10,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use MessageBox\Client\Client as MessageBoxClient;
 use MessageBox\Client\Model\Message;
 
-class GetCommand extends Command
+class ContentCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('message:get')
-            ->setDescription('Get a message from a MessageBox')
+            ->setName('message:content')
+            ->setDescription('Get raw message contents')
             ->addArgument(
                 'messageId',
                 InputArgument::REQUIRED,
@@ -31,14 +31,8 @@ class GetCommand extends Command
         $messageId = $input->getArgument('messageId');
 
         $message = $client->getMessage($messageId);
-        echo "ID       : " . $message->getId() . "\n";
-        echo "From     : " . $message->getFromBox() . " (" . $message->getFromDisplayname() . ")\n";
-        echo "Subject  : " . $message->getSubject() . "\n";
-        echo "Created  : " . $message->getCreatedAt() . "\n";
-        echo "Archived : " . $message->getArchivedAt() . "\n";
-        echo "Seen     : " . $message->getSeenAt() . "\n";
-        echo "Deleted  : " . $message->getDeletedAt() . "\n";
-        echo "Type     : " . $message->getContentType() . "\n";
-        //print_r($messages);
+        //echo "ID      : " . $message->getId() . "\n";
+        $content = $client->getContent($messageId);
+        echo $content;
     }
 }

@@ -12,6 +12,12 @@ class ClientFactory
         if (file_exists($filename)) {
             $json = file_get_contents($filename);
             $data = json_decode($json, true);
+            if (isset($data['account'])) {
+                $config['account'] = $data['account'];
+            }
+            if (isset($data['box'])) {
+                $config['box'] = $data['box'];
+            }
             if (isset($data['username'])) {
                 $config['username'] = $data['username'];
             }
@@ -22,9 +28,15 @@ class ClientFactory
                 $config['baseurl'] = $data['baseurl'];
             }
         }
-        
+
         if ($input) {
             // Load from cli provided options
+            if ($input->hasOption('account')) {
+                $config['account'] = $input->getOption('account');
+            }
+            if ($input->hasOption('box')) {
+                $config['box'] = $input->getOption('box');
+            }
             if ($input->hasOption('username')) {
                 $config['username'] = $input->getOption('username');
             }
@@ -35,9 +47,14 @@ class ClientFactory
                 $config['baseurl'] = $input->getOption('baseurl');
             }
         }
-        
+
         // Sanity checks
-        
+        if (!$config['account']) {
+            throw new RuntimeException("No account provided");
+        }
+        if (!$config['box']) {
+            throw new RuntimeException("No box provided");
+        }
         if (!$config['username']) {
             throw new RuntimeException("No username provided");
         }
@@ -47,9 +64,8 @@ class ClientFactory
         if (!$config['baseurl']) {
             throw new RuntimeException("No baseurl provided");
         }
-        
-        $client = new Client($config['username'], $config['password']);
-        $client->setBaseUrl($config['baseurl']);
+
+        $client = new Client($config['account'], $config['box'], $config['username'], $config['password'], $config['baseurl']);
         return $client;
     }
 }

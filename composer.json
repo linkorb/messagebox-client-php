@@ -21,8 +21,10 @@
         "issues": "https://github.com/messagebox-project/messagebox-client-php/issues"
     },
     "require": {
-        "symfony/console": "~2.4",
-        "guzzlehttp/guzzle": "~4.2"
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "symfony/console": "~2.7"
     },
     "bin": ["bin/messagebox-client"],
     "autoload": {
