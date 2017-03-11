@@ -8,5 +8,5 @@ MessageBox client for PHP
 use MessageBox\Client\Client;
 
 $client = new Client($account, $box, $username, $password, $baseUrl);
-$client->send($fromUsername, $to, $subject, $content, $contentType);
+$client->send($fromUsername, $to, $subject, $content, $contentType, $metadata);
 ```
