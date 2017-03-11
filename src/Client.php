@@ -1,4 +1,5 @@
 <?php
+
 namespace MessageBox\Client;
 
 use MessageBox\Client\Model\Message;
@@ -10,7 +11,7 @@ class Client
     protected $password;
     protected $account;
     protected $box;
-    private $baseUrl = "https://www.messagebox.web/";
+    private $baseUrl = 'https://www.messagebox.web/';
     private $boxBaseUrl;
 
     public function __construct($account, $box, $username, $password, $baseUrl = null)
@@ -22,7 +23,7 @@ class Client
         if ($baseUrl) {
             $this->baseUrl = $baseUrl;
         }
-        $this->boxBaseUrl = $this->baseUrl . '/api/v1/' . $account . '/' . $box;
+        $this->boxBaseUrl = $this->baseUrl.'/api/v1/'.$account.'/'.$box;
     }
 
     private $guzzleclient;
@@ -33,14 +34,15 @@ class Client
             return $this->guzzleclient;
         }
         $this->guzzleclient = new GuzzleClient();
+
         return $this->guzzleclient;
     }
 
     public function getHeaders($status = 'NEW')
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/messages';
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $url = $this->boxBaseUrl.'/messages';
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $body = $res->getBody();
         //echo $body;
         $rows = json_decode($body, true);
@@ -48,45 +50,49 @@ class Client
         foreach ($rows as $row) {
             $messages[] = $this->row2message($row);
         }
+
         return $messages;
     }
 
     public function getMessage($messageid)
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/messages/' . $messageid;
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $url = $this->boxBaseUrl.'/messages/'.$messageid;
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $body = $res->getBody();
         $row = json_decode($body, true);
         $message = $this->row2message($row);
+
         return $message;
     }
 
     public function archive($messageid)
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/messages/' . $messageid . '/archive';
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/archive';
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $body = $res->getBody();
+
         return true;
     }
 
     public function unarchive($messageid)
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/messages/' . $messageid . '/unarchive';
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/unarchive';
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $body = $res->getBody();
+
         return true;
     }
-
 
     public function getContent($messageid)
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/messages/' . $messageid . '/content';
-        $res = $guzzleclient->get($url, ['auth' =>  [$this->username, $this->password]]);
+        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/content';
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $content = $res->getBody();
+
         return $content;
     }
 
@@ -95,7 +101,7 @@ class Client
         $message = new Message();
         $message->setId($row['id']);
         $message->setSubject($row['subject']);
-        $message->setFromBox($row['from_account'] . '/' . $row['from_name']);
+        $message->setFromBox($row['from_account'].'/'.$row['from_name']);
         $message->setFromDisplayname($row['from_username']);
         /*
         $message->setToBox($row['to_box']);
@@ -109,14 +115,15 @@ class Client
         if (isset($row['content'])) {
             $message->setContent($row['content']);
         }
+        $message->setMetadata($row['metadata']);
+
         return $message;
     }
 
-    public function send($fromUsername, $to, $subject, $content, $contentType)
+    public function send($fromUsername, $to, $subject, $content, $contentType, $metadata)
     {
-
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl . '/send';
+        $url = $this->boxBaseUrl.'/send';
 
         $data = [];
         $data['from_username'] = $fromUsername;
@@ -124,12 +131,14 @@ class Client
         $data['subject'] = $subject;
         $data['content'] = base64_encode($content);
         $data['content_type'] = $contentType;
+        $data['metadata'] = base64_encode($metadata);
         $json = json_encode($data);
-        //echo $json;
-        $res = $guzzleclient->post($url, ['auth' =>  [$this->username, $this->password], 'body' => $json]);
+
+        $res = $guzzleclient->post($url, ['auth' => [$this->username, $this->password], 'body' => $json]);
         $json = $res->getBody();
         $data = json_decode($json, true);
         $messageId = $data['message_id'];
+
         return $messageId;
     }
 }

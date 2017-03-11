@@ -88,7 +88,6 @@ class Message
         $this->created_at = $created_at;
     }
 
-
     private $deleted_at;
 
     public function getDeletedAt()
@@ -123,10 +122,9 @@ class Message
     public function setArchivedAt($archived_at)
     {
         $this->archived_at = $archived_at;
+
         return $this;
     }
-
-
 
     private $content_type = 'text/plain';
 
@@ -140,7 +138,6 @@ class Message
         $this->content_type = $content_type;
     }
 
-
     private $content;
 
     public function getContent()
@@ -151,5 +148,19 @@ class Message
     public function setContent($content)
     {
         $this->content = $content;
+    }
+
+    private $metadata;
+
+    public function setMetadata($metadata)
+    {
+        $this->medadata = $metadata;
+
+        return $this;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 }

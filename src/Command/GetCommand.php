@@ -4,10 +4,8 @@ namespace MessageBox\Client\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use MessageBox\Client\Client as MessageBoxClient;
 use MessageBox\Client\Model\Message;
 
 class GetCommand extends Command
@@ -31,14 +29,15 @@ class GetCommand extends Command
         $messageId = $input->getArgument('messageId');
 
         $message = $client->getMessage($messageId);
-        echo "ID       : " . $message->getId() . "\n";
-        echo "From     : " . $message->getFromBox() . " (" . $message->getFromDisplayname() . ")\n";
-        echo "Subject  : " . $message->getSubject() . "\n";
-        echo "Created  : " . $message->getCreatedAt() . "\n";
-        echo "Archived : " . $message->getArchivedAt() . "\n";
-        echo "Seen     : " . $message->getSeenAt() . "\n";
-        echo "Deleted  : " . $message->getDeletedAt() . "\n";
-        echo "Type     : " . $message->getContentType() . "\n";
+        echo 'ID       : '.$message->getId()."\n";
+        echo 'From     : '.$message->getFromBox().' ('.$message->getFromDisplayname().")\n";
+        echo 'Subject  : '.$message->getSubject()."\n";
+        echo 'Created  : '.$message->getCreatedAt()."\n";
+        echo 'Archived : '.$message->getArchivedAt()."\n";
+        echo 'Seen     : '.$message->getSeenAt()."\n";
+        echo 'Deleted  : '.$message->getDeletedAt()."\n";
+        echo 'Type     : '.$message->getContentType()."\n";
+        echo 'Metadata : '.$message->getMetadata()."\n";
         //print_r($messages);
     }
 }
