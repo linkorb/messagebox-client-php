@@ -5,15 +5,8 @@ MessageBox client for PHP
 ```php
 <?php
 
-use MessageBox\Client\Client as MessageBoxClient;
-use MessageBox\Client\Model\Message;
+use MessageBox\Client\Client;
 
-$client = new MessageBoxClient($username, $password);
-$client->setBaseUrl('http://www.messagebox.web');
-$message = new Message();
-$message->setToBox('0000');
-$message->setSubject('Yeeehah');
-$message->setContent($rawjsonstring);
-$message->setContentType('formidable/json');
-$client->send($message);
+$client = new Client($account, $box, $username, $password, $baseUrl);
+$client->send($fromUsername, $to, $subject, $content, $contentType);
 ```
