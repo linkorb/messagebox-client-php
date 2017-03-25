@@ -141,4 +141,19 @@ class Client
 
         return $messageId;
     }
+
+    public function setProperty($messageId, $propertyName, $propertyValue)
+    {
+        $guzzleclient = $this->getGuzzleClient();
+        $url = $this->boxBaseUrl.'/messages/'.$messageId.'/properties/add';
+        $data['name'] = $propertyName;
+        $data['value'] = $propertyValue;
+        $json = json_encode($data);
+
+        $res = $guzzleclient->post($url, ['auth' => [$this->username, $this->password], 'body' => $json]);
+        $content = $res->getBody();
+        $content = json_decode($content, true);
+
+        return $content;
+    }
 }
