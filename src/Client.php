@@ -38,10 +38,15 @@ class Client
         return $this->guzzleclient;
     }
 
-    public function getHeaders($status = 'NEW')
+    public function getHeaders($status = 'NEW', $properties = array())
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages';
+
+        $queryString = null;
+        if ($properties) {
+            $queryString = http_build_query($properties);
+        }
+        $url = $this->boxBaseUrl.'/messages?'.$queryString;
         $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
         $body = $res->getBody();
         //echo $body;
