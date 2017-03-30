@@ -161,4 +161,16 @@ class Client
 
         return $content;
     }
+
+    public function createBox($accountName, $boxName, $adminUsername)
+    {
+        $guzzleclient = $this->getGuzzleClient();
+        $url = $this->baseUrl.'/api/v1/'.$accountName.'/new?name='.$boxName.'&admin='.$adminUsername;
+
+        $res = $guzzleclient->post($url, ['auth' => [$this->username, $this->password]]);
+        $content = $res->getBody();
+        $content = json_decode($content, true);
+
+        return $content;
+    }
 }
