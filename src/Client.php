@@ -53,7 +53,7 @@ class Client
         $rows = json_decode($body, true);
         $messages = array();
         foreach ($rows as $row) {
-            $messages[] = $this->row2message($row);
+            $messages[] = $this->row2message($row, 'inbox');
         }
 
         return $messages;
@@ -96,22 +96,28 @@ class Client
         $guzzleclient = $this->getGuzzleClient();
         $url = $this->boxBaseUrl.'/messages/'.$messageid.'/content';
         $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $content = $res->getBody();
+        $content = (string) $res->getBody();
 
         return $content;
     }
 
-    private function row2message($row)
+    private function row2message($row, $boxType = 'inbox')
     {
         $message = new Message();
         $message->setId($row['id']);
         $message->setSubject($row['subject']);
-        $message->setFromBox($row['from_account'].'/'.$row['from_name']);
-        $message->setFromDisplayname($row['from_username']);
-        /*
-        $message->setToBox($row['to_box']);
-        $message->setToDisplayname($row['to_displayname']);
-        */
+
+        switch ($boxType) {
+            case 'inbox':
+                    $message->setFromBox($row['from_account'].'/'.$row['from_name']);
+                    $message->setFromDisplayname($row['from_username']);
+                break;
+            case 'sent':
+                    $message->setToBox($row['to_box']);
+                    $message->setToDisplayname($row['to_displayname']);
+                break;
+        }
+
         $message->setCreatedAt($row['created_at']);
         //$message->setDeletedAt($row['deleted_at']);
         //$message->setSeenAt($row['seen_at']);
@@ -172,5 +178,22 @@ class Client
         $content = json_decode($content, true);
 
         return $content;
+    }
+
+    public function sent()
+    {
+        $guzzleclient = $this->getGuzzleClient();
+
+        $url = $this->boxBaseUrl.'/messages/sent';
+        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
+        $body = $res->getBody();
+        $rows = json_decode($body, true);
+
+        $messages = array();
+        foreach ($rows as $row) {
+            $messages[] = $this->row2message($row, 'sent');
+        }
+
+        return $messages;
     }
 }

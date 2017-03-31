@@ -2,3 +2,6 @@ vendor/*
 config.json
 composer.phar
 example/*
+
+
+autotune.json
