@@ -8,32 +8,13 @@ class ClientFactory
     public function createClient(InputInterface $input = null)
     {
         $config = array();
-        $filename = 'config.json';
-        if (file_exists($filename)) {
-            $json = file_get_contents($filename);
-            $data = json_decode($json, true);
-            if (isset($data['account'])) {
-                $config['account'] = $data['account'];
-            }
-            if (isset($data['box'])) {
-                $config['box'] = $data['box'];
-            }
-            if (isset($data['username'])) {
-                $config['username'] = $data['username'];
-            }
-            if (isset($data['password'])) {
-                $config['password'] = $data['password'];
-            }
-            if (isset($data['baseurl'])) {
-                $config['baseurl'] = $data['baseurl'];
-            }
-        }
+        $config['box'] = getenv('MESSAGEBOX_BOX');
+        $config['username'] = getenv('MESSAGEBOX_USERNAME');
+        $config['password'] = getenv('MESSAGEBOX_PASSWORD');
+        $config['baseurl'] = getenv('MESSAGEBOX_URL');
 
         if ($input) {
             // Load from cli provided options
-            if ($input->hasOption('account')) {
-                $config['account'] = $input->getOption('account');
-            }
             if ($input->hasOption('box')) {
                 $config['box'] = $input->getOption('box');
             }
@@ -49,9 +30,6 @@ class ClientFactory
         }
 
         // Sanity checks
-        if (!$config['account']) {
-            throw new RuntimeException("No account provided");
-        }
         if (!$config['box']) {
             throw new RuntimeException("No box provided");
         }
@@ -65,7 +43,7 @@ class ClientFactory
             throw new RuntimeException("No baseurl provided");
         }
 
-        $client = new Client($config['account'], $config['box'], $config['username'], $config['password'], $config['baseurl']);
+        $client = new Client($config['username'], $config['password'], $config['baseurl'], $config['box']);
         return $client;
     }
 }

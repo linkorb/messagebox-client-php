@@ -8,13 +8,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use MessageBox\Client\Model\Message;
 
-class SendCommand extends Command
+class DeliverCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('message:send')
-            ->setDescription('Send a message through MessageBox by placing it the outbox')
+            ->setName('message:deliver')
+            ->setDescription('Deliver a message into a MessageBox inbox')
             ->addArgument(
                 'filename',
                 InputArgument::OPTIONAL,
@@ -59,7 +59,7 @@ class SendCommand extends Command
         $factory = new ClientFactory();
         $client = $factory->createClient();
 
-        $res = $client->send($envelope);
+        $res = $client->deliver($envelope);
         print_r($res);
     }
 }

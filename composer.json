@@ -18,15 +18,16 @@
     ],
     "support": {
         "e-mail": "support@linkorb.com",
-        "issues": "https://github.com/messagebox-project/messagebox-client-php/issues"
+        "issues": "https://github.com/linkorb/messagebox-client-php/issues"
     },
     "require": {
-        "guzzlehttp/guzzle": "~5.0|~6.0"
+        "guzzlehttp/guzzle": "^5.0|^6.0"
     },
     "require-dev": {
-        "symfony/console": "~2.7"
+        "symfony/console": "^3.0|^4.0",
+        "vlucas/phpdotenv": "^2.0"
     },
-    "bin": ["bin/messagebox-client"],
+    "bin": ["bin/messagebox"],
     "autoload": {
         "psr-4": {
             "MessageBox\\Client\\": "src/"

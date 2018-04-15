@@ -35,11 +35,7 @@ class ListCommand extends Command
             parse_str($properties, $propertyArray);
         }
 
-        $messages = $client->getHeaders('NEW', $propertyArray);
-        foreach ($messages as $message) {
-            echo '#'.$message->getId().': '.$message->getFromBox().'('.$message->getFromDisplayname().') '.
-                $message->getSubject()."\n";
-        }
-        //print_r($messages);
+        $messages = $client->listMessages('NEW', $propertyArray);
+        print_r($messages);
     }
 }

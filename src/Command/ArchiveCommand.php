@@ -30,6 +30,7 @@ class ArchiveCommand extends Command
         $client = $factory->createClient();
         $messageId = $input->getArgument('messageId');
 
-        $message = $client->archive($messageId);
+        $response = $client->archive($messageId);
+        print_r($response);
     }
 }

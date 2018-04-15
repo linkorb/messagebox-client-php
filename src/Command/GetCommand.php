@@ -29,15 +29,7 @@ class GetCommand extends Command
         $messageId = $input->getArgument('messageId');
 
         $message = $client->getMessage($messageId);
-        echo 'ID       : '.$message->getId()."\n";
-        echo 'From     : '.$message->getFromBox().' ('.$message->getFromDisplayname().")\n";
-        echo 'Subject  : '.$message->getSubject()."\n";
-        echo 'Created  : '.$message->getCreatedAt()."\n";
-        echo 'Archived : '.$message->getArchivedAt()."\n";
-        echo 'Seen     : '.$message->getSeenAt()."\n";
-        echo 'Deleted  : '.$message->getDeletedAt()."\n";
-        echo 'Type     : '.$message->getContentType()."\n";
-        echo 'Metadata : '.$message->getMetadata()."\n";
-        //print_r($messages);
+
+        print_r($message);
     }
 }

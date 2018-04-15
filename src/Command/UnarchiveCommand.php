@@ -30,6 +30,7 @@ class UnarchiveCommand extends Command
         $client = $factory->createClient();
         $messageId = $input->getArgument('messageId');
 
-        $message = $client->unarchive($messageId);
+        $result = $client->unarchive($messageId);
+        print_r($result);
     }
 }

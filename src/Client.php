@@ -12,130 +12,98 @@ class Client
     protected $account;
     protected $box;
     private $baseUrl = 'https://www.messagebox.web/';
-    private $boxBaseUrl;
-
-    public function __construct($account, $box, $username, $password, $baseUrl = null)
-    {
-        $this->account = $account;
-        $this->box = $box;
-        $this->username = $username;
-        $this->password = $password;
-        if ($baseUrl) {
-            $this->baseUrl = $baseUrl;
-        }
-        $this->boxBaseUrl = $this->baseUrl.'/api/v1/'.$account.'/'.$box;
-    }
-
+    private $apiBaseUrl;
     private $guzzleclient;
 
-    private function getGuzzleClient()
+    public function __construct($username, $password, $baseUrl, $box)
     {
-        if ($this->guzzleclient) {
-            return $this->guzzleclient;
-        }
+        $this->username = $username;
+        $this->password = $password;
+        $this->baseUrl = rtrim($baseUrl, '/');
+        $this->box = $box;
+        $this->apiBaseUrl = $this->baseUrl.'/api/v1/' . $this->box;
         $this->guzzleclient = new GuzzleClient();
-
-        return $this->guzzleclient;
     }
 
-    public function getHeaders($status = 'NEW', $properties = array())
+    public function call($uri, $body = null)
     {
-        $guzzleclient = $this->getGuzzleClient();
+        $url = $this->apiBaseUrl . $uri;
+        // echo "Requesting: $url" . PHP_EOL;
+        if ($body) {
+            $res = $this->guzzleclient->request(
+                'POST',
+                $url,
+                [
+                    'auth' => [
+                        $this->username,
+                        $this->password
+                    ],
+                    'body' => $body,
+                ]
+            );
+        } else {
+            $res = $this->guzzleclient->request(
+                'GET',
+                $url,
+                [
+                    'auth' => [
+                        $this->username,
+                        $this->password
+                    ]
+                ]
+            );
+        }
+        // echo $res->getStatusCode() . PHP_EOL;
 
+        $body = $res->getBody();
+        // echo $body;
+        $data = json_decode($body, true);
+        return $data;
+    }
+
+    public function listMessages($status = 'NEW', $properties = array())
+    {
         $queryString = null;
         if ($properties) {
             $queryString = http_build_query($properties);
         }
-        $url = $this->boxBaseUrl.'/messages?'.$queryString;
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $body = $res->getBody();
-        //echo $body;
-        $rows = json_decode($body, true);
-        $messages = array();
-        foreach ($rows as $row) {
-            $messages[] = $this->row2message($row, 'inbox');
-        }
-
-        return $messages;
+        $data = $this->call('/messages?' . $queryString);
+        // print_r($data); exit();
+        return $data;
     }
 
-    public function getMessage($messageid)
+    public function getMessage($xuid)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages/'.$messageid;
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $body = $res->getBody();
-        $row = json_decode($body, true);
-        $message = $this->row2message($row);
-
-        return $message;
+        $data = $this->call('/messages/' . $xuid);
+        return $data;
     }
 
-    public function archive($messageid)
+    public function archive($xuid)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/archive';
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $body = $res->getBody();
-
-        return true;
+        $data = $this->call('/messages/' . $xuid . '/archive');
+        return $data;
     }
 
-    public function unarchive($messageid)
+    public function unarchive($xuid)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/unarchive';
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $body = $res->getBody();
-
-        return true;
+        $data = $this->call('/messages/' . $xuid . '/unarchive');
+        return $data;
     }
 
-    public function getContent($messageid)
+    public function getContent($xuid)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages/'.$messageid.'/content';
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $content = (string) $res->getBody();
-
+        $data = $this->call('/messages/' . $xuid . '/content');
         return $content;
     }
 
-    private function row2message($row, $boxType = 'inbox')
+    public function getView($xuid)
     {
-        $message = new Message();
-        $message->setId($row['id']);
-        $message->setSubject($row['subject']);
-
-        switch ($boxType) {
-            case 'inbox':
-                    $message->setFromBox($row['from_account'].'/'.$row['from_name']);
-                    $message->setFromDisplayname($row['from_username']);
-                break;
-            case 'sent':
-                    $message->setToBox($row['to_box']);
-                    $message->setToDisplayname($row['to_displayname']);
-                break;
-        }
-
-        $message->setCreatedAt($row['created_at']);
-        //$message->setDeletedAt($row['deleted_at']);
-        //$message->setSeenAt($row['seen_at']);
-        $message->setArchivedAt($row['archived_at']);
-        $message->setContentType($row['content_type']);
-        if (isset($row['content'])) {
-            $message->setContent($row['content']);
-        }
-        $message->setMetadata($row['metadata']);
-
-        return $message;
+        $data = $this->call('/messages/' . $xuid . '/view');
+        return $data;
     }
 
-    public function send($fromUsername, $to, $subject, $content, $contentType, $metadata)
+    public function legacySend($fromUsername, $to, $subject, $content, $contentType, $metadata)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/send';
-
         $data = [];
         $data['from_username'] = $fromUsername;
         $data['to'] = $to;
@@ -145,18 +113,31 @@ class Client
         $data['metadata'] = base64_encode($metadata);
         $json = json_encode($data);
 
-        $res = $guzzleclient->post($url, ['auth' => [$this->username, $this->password], 'body' => $json]);
-        $json = $res->getBody();
-        $data = json_decode($json, true);
+        $data = $this->call('/default/send', $json);
+
+        // print_r($data);
+
         $messageId = $data['message_id'];
 
         return $messageId;
     }
 
+    public function send($envelope)
+    {
+        $json = json_encode($envelope, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        return $this->call('/send', $json);
+    }
+
+    public function deliver($envelope)
+    {
+        $json = json_encode($envelope, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        return $this->call('/deliver', $json);
+    }
+
     public function setProperty($messageId, $propertyName, $propertyValue)
     {
         $guzzleclient = $this->getGuzzleClient();
-        $url = $this->boxBaseUrl.'/messages/'.$messageId.'/properties/add';
+        $url = $this->apiBaseUrl.'/messages/'.$messageId.'/properties/add';
         $data['name'] = $propertyName;
         $data['value'] = $propertyValue;
         $json = json_encode($data);
@@ -178,22 +159,5 @@ class Client
         $content = json_decode($content, true);
 
         return $content;
-    }
-
-    public function sent()
-    {
-        $guzzleclient = $this->getGuzzleClient();
-
-        $url = $this->boxBaseUrl.'/messages/sent';
-        $res = $guzzleclient->get($url, ['auth' => [$this->username, $this->password]]);
-        $body = $res->getBody();
-        $rows = json_decode($body, true);
-
-        $messages = array();
-        foreach ($rows as $row) {
-            $messages[] = $this->row2message($row, 'sent');
-        }
-
-        return $messages;
     }
 }
