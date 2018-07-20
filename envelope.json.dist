@@ -1,0 +1,16 @@
+{
+    "from": {
+        "displayName": "Alice Alisson",
+        "address": "alice"
+    },
+    "to": [
+        {
+            "displayName": "Bob Bobson",
+            "address": "bob"
+        }
+    ],
+    "subject":"This is my test message {stamp} from {hostname}",
+    "dateTime": "{dateTime}",
+    "content":"Hello from {dateTime}",
+    "contentType":"text/plain"
+}
