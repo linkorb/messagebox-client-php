@@ -17,7 +17,7 @@ class SendCommand extends Command
             ->setDescription('Send a message through MessageBox by placing it the outbox')
             ->addArgument(
                 'filename',
-                InputArgument::OPTIONAL,
+                InputArgument::REQUIRED,
                 'Filename'
             )
         ;
@@ -26,27 +26,13 @@ class SendCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filename = $input->getArgument('filename');
-        if ($filename) {
-            $json = file_get_contents($filename);
-            $envelope = json_decode($json, true);
-        } else {
-            $envelope = [
-                'id' => '{stamp}@{hostname}',
-                'subject' => 'Example subject {stamp}',
-                'from' => [
-                    'displayName' => 'Alice Alisson',
-                    'address' => 'alice',
-                ],
-                'to' => [
-                    [
-                        'displayName' => 'Bob Bobson',
-                        'address' => 'bob',
-                    ],
-                ],
-                'dateTime' => '{dateTime}',
-                'contentType' => 'text/plain',
-                'content' => 'Hello Bob!',
-            ];
+        if (!file_exists($filename)) {
+            throw new RuntimeException("File not found: " . $filename);
+        }
+        $json = file_get_contents($filename);
+        $envelope = json_decode($json, true);
+        if (!$envelope) {
+            throw new RuntimeException("JSON parse error");
         }
 
         // Support some simple search/replace code for variantion
