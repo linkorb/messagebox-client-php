@@ -34,7 +34,7 @@ class ListCommand extends Command
             $properties = str_replace(',', '&', $properties);
             parse_str($properties, $propertyArray);
         }
-
+        print_r($propertyArray);
         $messages = $client->listMessages('NEW', $propertyArray);
         print_r($messages);
     }
