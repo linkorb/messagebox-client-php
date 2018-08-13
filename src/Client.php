@@ -65,7 +65,11 @@ class Client
     {
         $queryString = null;
         if ($properties) {
-            $queryString = http_build_query($properties);
+            $q = [];
+            foreach ($properties as $key=>$value) {
+                $q['_' . $key] = $value;
+            }
+            $queryString = http_build_query($q);
         }
         $data = $this->call('/messages?' . $queryString);
         // print_r($data); exit();
