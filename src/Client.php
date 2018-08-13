@@ -134,19 +134,15 @@ class Client
         return $this->call('/deliver', $json);
     }
 
-    public function setProperty($messageId, $propertyName, $propertyValue)
+    public function setProperty($xuid, $name, $value)
     {
-        $guzzleclient = $this->getGuzzleClient();
-        $url = $this->apiBaseUrl.'/messages/'.$messageId.'/properties/add';
-        $data['name'] = $propertyName;
-        $data['value'] = $propertyValue;
+        $data = [
+            'name' => $name,
+            'value' => $value
+        ];
         $json = json_encode($data);
 
-        $res = $guzzleclient->post($url, ['auth' => [$this->username, $this->password], 'body' => $json]);
-        $content = $res->getBody();
-        $content = json_decode($content, true);
-
-        return $content;
+        return $this->call('/messages/' . $xuid . '/properties', $json);
     }
 
     public function createBox($accountName, $boxName, $adminUsername)
