@@ -61,16 +61,15 @@ class Client
         return $data;
     }
 
-    public function listMessages($status = 'NEW', $properties = array())
+    public function listMessages($status = 'INBOX', $properties = array())
     {
-        $queryString = null;
+        $q = ['status' => $status];
         if ($properties) {
-            $q = [];
             foreach ($properties as $key=>$value) {
                 $q['_' . $key] = $value;
             }
-            $queryString = http_build_query($q);
         }
+        $queryString = http_build_query($q);
         $data = $this->call('/messages?' . $queryString);
         // print_r($data); exit();
         return $data;
